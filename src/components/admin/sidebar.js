@@ -2,7 +2,7 @@ import { LayoutDashboard, Package, Users, FileText, LogOut , BookPlus, Settings 
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 bg-green-500 text-white p-6">
+    <aside className="w-64 bg-green-600 text-white p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Alkaramh</h1>
       </div>
@@ -15,25 +15,25 @@ export default function Sidebar() {
             </a>
           </li> */}
           <li>
-            <a href="/" className="flex items-center space-x-2 p-2 hover:bg-green-600 rounded">
+            <a href="/" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
               <BookPlus className="h-5 w-5" />
               <span>Categories</span>
             </a>
           </li>
           <li>
-            <a href="/products" className="flex items-center space-x-2 p-2 hover:bg-green-600 rounded">
+            <a href="/products" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
               <Package className="h-5 w-5" />
               <span>Products</span>
             </a>
           </li>
           <li>
-            <a href="/orders" className="flex items-center space-x-2 p-2 hover:bg-green-600 rounded">
+            <a href="/orders" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
               <FileText className="h-5 w-5" />
               <span>Orders</span>
             </a>
           </li>
           <li>
-            <a href="/user" className="flex items-center space-x-2 p-2 hover:bg-green-600 rounded">
+            <a href="/user" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
               <Users className="h-5 w-5" />
               <span>Users</span>
             </a>

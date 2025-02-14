@@ -19,6 +19,7 @@ export default function OrderManagement() {
     console.log("Updated Selected Order:", selectedOrder);
   }, [selectedOrder]);
 
+
   const fetchOrders = async () => {
     try {
       const ordersSnapshot = await getDocs(collection(db, "orders"));
@@ -37,36 +38,47 @@ export default function OrderManagement() {
 
   const handleOrderClick = (order) => {
     console.log("Clicked Order Data:", order); // 🔍 Debugging
-  
+
     setSelectedOrder({
       id: order.id || "N/A",
       status: order.status || "Unknown",
-      totalAmount: order.cartItems.totalAmount || "0.00",
+      totalAmount: order.totalAmount || "0.00",
       paymentMethod: order.paymentMethod || "N/A",
-      createdAt: order.createdAt && order.createdAt.toDate ? order.createdAt.toDate().toLocaleString() : "N/A",
+      createdAt: order.createdAt?.seconds 
+        ? new Date(order.createdAt.seconds * 1000).toLocaleString() 
+        : "N/A",
       userId: order.userId || "Unknown",
-  
-      // Extract Address
-      address: order.address 
-  ? `${order.address.street || ""}, ${order.address.city || ""}, ${order.address.country || ""}` 
-  : "N/A",
-  
-      // Extract Cart Items
-      cartItems: order.cartItems ? order.cartItems.map((item) => ({
-        id: item.variantId || "N/A",
-        productName: item.productName || "Unknown Product",
-        variantName: item.variantName || "Unknown Variant",
-        quantity: item.quantity ? parseInt(item.quantity, 10) : 0,
-        price: item.variantPrice ? parseFloat(item.variantPrice) : 0.00,
-        imageUrl: item.productImageUrl || "/placeholder.png",
-      })) : [],
-    });
-  
-    console.log("Updated Selected Order:", selectedOrder); // 🔍 Debugging
-  };
-  
-  
 
+      // Extract Address
+      address: order.address
+        ? {
+            name: order.address.name || "N/A",
+            phoneNumber: order.address.phoneNumber || "N/A",
+            district: order.address.district || "N/A",
+            landmark: order.address.landMark || "N/A",
+            fullAddress: order.address.address || "N/A"
+          }
+        : { name: "N/A", phoneNumber: "N/A", district: "N/A", landmark: "N/A", fullAddress: "N/A" },
+
+      // Extract Cart Items
+      cartItems: order.cartItems
+        ? order.cartItems.map((item) => ({
+            id: item.id || "N/A",
+            productName: item.productName || "Unknown Product",
+            variantName: item.variantName || "Unknown Variant",
+            quantity: item.quantity ? parseInt(item.quantity, 10) : 0,
+            price: item.variantPrice ? parseFloat(item.variantPrice) : 0.00,
+            imageUrl: item.productImageUrl || "/placeholder.png",
+            description: item.discription || "No description available",
+            arabicDescription: item.arabicDiscription || "N/A",
+          }))
+        : [],
+    });
+
+    console.log("Updated Selected Order:", setSelectedOrder); // 🔍 Debugging
+};
+
+  
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       const orderRef = doc(db, "orders", orderId);
@@ -96,7 +108,7 @@ export default function OrderManagement() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-green-500 shadow-sm border-b z-10">
+        <header className="bg-gray-50 z-10">
           <div className="px-6 py-4">
             <div className="flex flex-col space-y-4">
               <div className="flex items-center justify-between">
@@ -180,101 +192,75 @@ export default function OrderManagement() {
         {/* Order Details Modal */}
         {selectedOrder && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-800">Order Details</h2>
-        <button
+  <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 className="text-xl font-semibold text-gray-800">Order Details</h2>
+      <button
           onClick={() => setSelectedOrder(null)}
           className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
         >
           <X className="h-5 w-5" />
         </button>
-      </div>
-      
-      <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 120px)' }}>
-        <div className="grid grid-cols-2 gap-8 mb-6">
-          {/* Order Information */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">Order Information</h3>
-            <div className="space-y-2">
-              <p className="flex justify-between">
-                <span className="text-gray-600">Order ID:</span>
-                <span className="font-medium">#{selectedOrder.id}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="text-gray-600">Total Amount:</span>
-                <span className="font-medium">₹{selectedOrder.totalAmount}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
-                <span className="font-medium">{selectedOrder.status}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="text-gray-600">Created:</span>
-                <span className="font-medium">
-                  {selectedOrder.createdAt && selectedOrder.createdAt.seconds
-                    ? new Date(selectedOrder.createdAt.seconds * 1000).toLocaleString()
-                    : "N/A"}
-                </span>
-              </p>
-            </div>
-          </div>
+    </div>
 
-          {/* Customer Information */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h3>
-            <div className="space-y-2">
-              <p className="flex justify-between">
-                <span className="text-gray-600">Name:</span>
-                <span className="font-medium">{selectedOrder.address.name || "N/A"}</span>
-              </p>
-              <p className="flex justify-between ">
-                <span className="text-gray-600">Phone:</span>
-                <span className="font-medium">{selectedOrder.address.phoneNumber || "N/A"}</span>
-              </p>
-              <p className="text-gray-600">Address:</p>
-              <p className="text-sm text-gray-800">
-                {selectedOrder.address.address || "N/A"},<br />
-                {selectedOrder.address.district || "N/A"},<br />
-                {selectedOrder.address.landMark || "N/A"}
-              </p>
-            </div>
-          </div>
+    <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 120px)' }}>
+      <div className="grid grid-cols-2 gap-8 mb-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">Order Information</h3>
+          <p><strong>Order ID:</strong> {selectedOrder.id || "N/A"}</p>
+          <p><strong>Status:</strong> {selectedOrder.status || "N/A"}</p>
+          <p><strong>Created At:</strong> {selectedOrder.createdAt}</p>
+          <p><strong>Total Amount:</strong> ₹{selectedOrder.totalAmount || "N/A"}</p>
+          <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod || "N/A"}</p>
+          <p><strong>User ID:</strong> {selectedOrder.userId || "N/A"}</p>
         </div>
 
-        {/* Order Items */}
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Order Items</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-white">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variant</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h3>
+          <p><strong>Name:</strong> {selectedOrder.address?.name || "N/A"}</p>
+          <p><strong>Phone:</strong> {selectedOrder.address?.phoneNumber || "N/A"}</p>
+          <p><strong>District:</strong> {selectedOrder.address?.district || "N/A"}</p>
+          <p><strong>Landmark:</strong> {selectedOrder.address?.landmark || "N/A"}</p>
+          <p><strong>Full Address:</strong> {selectedOrder.address?.fullAddress || "N/A"}</p>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">Order Items</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-white">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variant</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Arabic Description</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {selectedOrder.cartItems.map((item) => (
+                <tr key={item.id} className="bg-white">
+                  <td className="px-4 py-3 text-sm text-gray-900">{item.productName}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{item.variantName}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{item.quantity}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{item.description || "N/A"}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{item.arabicDescription || "N/A"}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500 text-right">₹{parseFloat(item.price).toFixed(2)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right">
+                    ₹{(parseFloat(item.quantity) * parseFloat(item.price)).toFixed(2)}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {selectedOrder.cartItems.map((item) => (
-                  <tr key={item.id} className="bg-white">
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.productName}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{item.variantName}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{item.quantity}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 text-right">₹{parseFloat(item.variantPrice).toFixed(2)}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right">
-                      ₹{(parseFloat(item.quantity) * parseFloat(item.variantPrice)).toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
+</div>
 )}
       </div>
     </div>

@@ -161,7 +161,7 @@ const filteredCategories = categories?.filter((category) =>
       <Sidebar />
       <div className="flex-1 overflow-hidden">
         {/* Header */}
-        <header className="bg-green-500  shadow-sm border-b">
+        <header className="bg-gray-50">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-semibold text-gray-800">Categories</h1>
@@ -227,7 +227,7 @@ const filteredCategories = categories?.filter((category) =>
                         <img
                           src={category.imageUrl || "/default-image.png"} // Use a fallback if imageUrl is missing
                           alt={category.name}
-                          className="w-12 h-12 rounded-md object-cover"
+                          className="w-12 h-12 rounded-full object-cover"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

@@ -488,7 +488,7 @@ export default function ProductManagement() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Fixed Header */}
-        <header className="bg-green-500 shadow-sm border-b z-10">
+        <header className="bg-gray-50 z-10">
           <div className="px-6 py-4">
             <div className="flex flex-col space-y-4">
               <div className="flex items-center justify-between">
