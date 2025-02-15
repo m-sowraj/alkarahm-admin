@@ -1,0 +1,13 @@
+{
+  "products": "Products",
+  "searchProducts": "Search products",
+  "allCategories": "All Categories",
+  "allStatus": "All Status",
+  "active": "Active",
+  "inactive": "Inactive",
+  "name": "Name",
+  "category": "Category",
+  "status": "Status",
+  "actions": "Actions",
+  "noProductsFound": "No products found"
+}

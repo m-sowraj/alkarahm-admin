@@ -9,9 +9,30 @@ const createProducts = async (ProductsData) => {
     try {
       const ProductsId = uuidv4();
       const ProductsWithId = { 
-        ...ProductsData, 
+        ...ProductsData,
         id: ProductsId,
-        timestamp: new Date() // Add a timestamp
+        sku: ProductsData.sku || '',
+        weight: ProductsData.weight || 0,
+        dimensions: ProductsData.dimensions || '',
+        manufacturer: ProductsData.manufacturer || '',
+        warranty: ProductsData.warranty || '',
+        shippingDetails: ProductsData.shippingDetails || {},
+        seo: {
+          metaTitle: ProductsData.seo?.metaTitle || '',
+          metaDescription: ProductsData.seo?.metaDescription || '',
+          keywords: ProductsData.seo?.keywords || ''
+        },
+        relatedProducts: ProductsData.relatedProducts || [],
+        tags: ProductsData.tags || [],
+        inventory: {
+          stock: ProductsData.inventory?.stock || 0,
+          lowStockThreshold: ProductsData.inventory?.lowStockThreshold || 5
+        },
+        tax: {
+          taxClass: ProductsData.tax?.taxClass || 'standard',
+          taxRate: ProductsData.tax?.taxRate || 0
+        },
+        timestamp: new Date()
       };
   
       await db.collection(collectionName).doc(ProductsId).set(ProductsWithId);
@@ -77,10 +98,35 @@ const getAllProducts = async () => {
           return [];
       }
 
-      const products = snapshot.docs.map(doc => ({
-          id: doc.id,  // Include the document ID
-          ...doc.data()
-      }));
+      const products = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // Ensure all new fields have default values if not present
+          sku: data.sku || '',
+          weight: data.weight || 0,
+          dimensions: data.dimensions || '',
+          manufacturer: data.manufacturer || '',
+          warranty: data.warranty || '',
+          shippingDetails: data.shippingDetails || {},
+          seo: {
+            metaTitle: data.seo?.metaTitle || '',
+            metaDescription: data.seo?.metaDescription || '',
+            keywords: data.seo?.keywords || ''
+          },
+          relatedProducts: data.relatedProducts || [],
+          tags: data.tags || [],
+          inventory: {
+            stock: data.inventory?.stock || 0,
+            lowStockThreshold: data.inventory?.lowStockThreshold || 5
+          },
+          tax: {
+            taxClass: data.tax?.taxClass || 'standard',
+            taxRate: data.tax?.taxRate || 0
+          }
+        };
+      });
 
       console.log('Fetched products:', products);
       return products;
