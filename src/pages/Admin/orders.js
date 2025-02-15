@@ -71,7 +71,6 @@ export default function OrderManagement() {
   },[]);
   
   useEffect(() => {
-    console.log("Updated Selected Order:", selectedOrder);
   }, [selectedOrder]);
 
 
@@ -82,8 +81,6 @@ export default function OrderManagement() {
         id: doc.id,
         ...doc.data(),
       }));
-  
-      console.log("Fetched Orders:", ordersList); // 🔍 Debugging
       setOrders(ordersList);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -92,7 +89,6 @@ export default function OrderManagement() {
   
 
   const handleOrderClick = (order) => {
-    console.log("Clicked Order Data:", order); // 🔍 Debugging
 
     setSelectedOrder({
       id: order.id || "N/A",
@@ -128,9 +124,7 @@ export default function OrderManagement() {
             arabicDescription: item.arabicDiscription || "N/A",
           }))
         : [],
-    });
-
-    console.log("Updated Selected Order:", setSelectedOrder); // 🔍 Debugging
+    }); // 🔍 Debugging
 };
 
   
@@ -145,9 +139,7 @@ export default function OrderManagement() {
           order.id === orderId ? { ...order, status: newStatus } : order
         )
       );
-  
-      console.log(`Order ${orderId} updated to ${newStatus}`);
-    } catch (error) {
+      } catch (error) {
       console.error("Error updating order status:", error);
     }
   };

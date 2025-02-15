@@ -81,7 +81,6 @@ export default function CategoryManagement() {
         ...doc.data(),
       }));
       setCategories(categoriesList);
-      console.log("Fetched Categories:", categoriesList); // Debugging
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -124,7 +123,6 @@ export default function CategoryManagement() {
   };
 
   const handleSaveCategory = async (category) => {
-    console.log("Category selected:", category);
     try {
       if (!category.name.trim()) {
         toast.error("Category name cannot be empty");

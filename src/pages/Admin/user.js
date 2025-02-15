@@ -77,7 +77,6 @@ export default function UserManagement() {
         ...doc.data(),
       }));
       setUsers(usersList);
-      console.log("Fetched Users:", usersList); // Debugging
     } catch (error) {
       console.error("Error fetching users:", error);
     }
