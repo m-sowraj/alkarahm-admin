@@ -165,7 +165,8 @@ export default function ProductManagement() {
 
   const handleAddProduct = () => {
     setSelectedProduct({
-      id: "", // ✅ Will be assigned after saving
+      id: "",
+      docId: "",
       name: "",
       arabic_name: "",
       description: "",
@@ -205,21 +206,21 @@ export default function ProductManagement() {
         imageUrl: product.imageUrl,
         rating: product.rating || 0,
       };
-
+  
       let productRef;
       if (isAddingProduct) {
         // Add new product
         productRef = await addDoc(collection(db, "Products"), productData);
-        await updateDoc(productRef, { id: productRef.id });
+        await updateDoc(productRef, { id: productRef.id, docId: productRef.id }); // ✅ Assign docId as string
       } else {
         // Update existing product
         productRef = doc(db, "Products", product.docId);
-        await updateDoc(productRef, productData);
+        await updateDoc(productRef, { ...productData, docId: product.docId }); // ✅ Ensure docId is updated
       }
-
+  
       // Handle variants separately in PRODUCT_VARIANT collection
       const batch = writeBatch(db);
-
+  
       // If updating, first delete existing variants
       if (!isAddingProduct) {
         const variantsQuery = query(
@@ -231,7 +232,7 @@ export default function ProductManagement() {
           batch.delete(doc(db, "PRODUCT_VARIANT", variantDoc.id));
         });
       }
-
+  
       // Add new variants
       product.variants.forEach((variant) => {
         const variantRef = doc(collection(db, "PRODUCT_VARIANT"));
@@ -244,7 +245,7 @@ export default function ProductManagement() {
           isAvailable: variant.isAvailable ?? false,
         });
       });
-
+  
       await batch.commit();
       await fetchProducts();
       setSelectedProduct(null);
@@ -255,7 +256,6 @@ export default function ProductManagement() {
       toast.error("Failed to save product");
     }
   };
-
   const handleFeaturedToggle = async (product) => {
     try {
       const productRef = doc(db, "Products", product.docId);
