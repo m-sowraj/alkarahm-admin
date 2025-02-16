@@ -4,6 +4,8 @@ import { Search, Settings, Plus, Edit, X, Download } from "lucide-react";
 import { Switch } from "@headlessui/react";
 import Sidebar from "../../components/admin/sidebar";
 import { toast } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
+import placeholder from "../../images/placeholder.svg";
 import {
   collection,
   getDocs,
@@ -21,6 +23,9 @@ export default function CategoryManagement() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const { language } = useLanguage();
+  const [previewImage, setPreviewImage] = useState(
+    selectedCategory?.imageUrl || ""
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -46,7 +51,7 @@ export default function CategoryManagement() {
       imageUrl: "Image URL",
       activeStatus: "Active Status",
       saveCategory: "Save Category",
-      toggleStatus: "Toggle Status"
+      toggleStatus: "Toggle Status",
     },
     ar: {
       categories: "الفئات",
@@ -67,8 +72,8 @@ export default function CategoryManagement() {
       imageUrl: "رابط الصورة",
       activeStatus: "حالة النشاط",
       saveCategory: "حفظ الفئة",
-      toggleStatus: "تبديل الحالة"
-    }
+      toggleStatus: "تبديل الحالة",
+    },
   };
 
   const t = translations[language] || translations.en;
@@ -132,12 +137,14 @@ export default function CategoryManagement() {
       let updatedCategories = [...categories];
 
       if (isAddingCategory) {
+        // Generate a UUID for the new category
+        category.id = uuidv4();
+
         // Add new category
         const docRef = await addDoc(collection(db, "category"), category);
-        category.docId = docRef.id; // Store actual Firestore document ID
+        category.docId = docRef.id; // Store Firestore document ID
         updatedCategories.push(category);
       } else {
-        // Ensure we're using the document ID from Firestore, not the `id` field
         if (!category.docId) {
           toast.error("Invalid document reference.");
           return;
@@ -171,6 +178,43 @@ export default function CategoryManagement() {
       console.error("Error saving category:", error);
       toast.error("Failed to save category");
     }
+  };
+
+  const handleAddImage = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = async (e) => {
+      try {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "product_images");
+        formData.append("cloud_name", "df3plfcau");
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/df3plfcau/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+        if (!data.secure_url) throw new Error("Image upload failed");
+
+        setSelectedCategory((prev) => ({
+          ...prev,
+          imageUrl: data.secure_url,
+        }));
+        setPreviewImage(data.secure_url);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    };
+    fileInput.click();
   };
 
   const handleStatusToggle = async (category) => {
@@ -281,12 +325,12 @@ export default function CategoryManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredCategories?.map((category) => (
-                    <tr key={category.id} className="hover:bg-gray-50">
+                  {filteredCategories?.map((category, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
                       {/* Image Column */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <img
-                          src={category.imageUrl || "/default-image.png"} // Use a fallback if imageUrl is missing
+                          src={category.imageUrl || placeholder} // Use a fallback if imageUrl is missing
                           alt={category.name}
                           className="w-12 h-12 rounded-full object-cover"
                         />
@@ -358,27 +402,6 @@ export default function CategoryManagement() {
                     }}
                   >
                     <div className="space-y-4">
-                      {/* Category ID */}
-                      {isAddingCategory && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            {t.categoryId}
-                          </label>
-                          <input
-                            type="text"
-                            value={selectedCategory.id || ""}
-                            onChange={(e) =>
-                              setSelectedCategory({
-                                ...selectedCategory,
-                                id: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="Enter unique category ID"
-                          />
-                        </div>
-                      )}
-
                       {/* Category Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -425,15 +448,22 @@ export default function CategoryManagement() {
                         <input
                           type="text"
                           value={selectedCategory.imageUrl || ""}
-                          onChange={(e) =>
-                            setSelectedCategory({
-                              ...selectedCategory,
-                              imageUrl: e.target.value,
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                          placeholder="Enter image URL"
+                          readOnly
+                          className="mt-1 p-2 border w-full rounded-md bg-gray-100"
                         />
+                        <button
+                          onClick={handleAddImage}
+                          className="px-4 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm mt-2"
+                        >
+                          Add Image
+                        </button>
+                        {selectedCategory?.imageUrl && (
+        <img
+          src={selectedCategory.imageUrl}
+          alt="Category Preview"
+          className="mt-3 w-32 h-32 object-cover rounded-md"
+        />
+      )}
                       </div>
 
                       {/* Active Status */}

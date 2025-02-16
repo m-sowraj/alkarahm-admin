@@ -52,33 +52,33 @@ export default function ProductManagement() {
       productInformation: "Product Information",
       actions: "Actions",
       products: "Products",
-    addProduct: "Add Product",
-    searchProducts: "Search products...",
-    allCategories: "All Categories",
-    allStatus: "All Status",
-    active: "Active",
-    inactive: "Inactive",
-    tableHeaders: ["Name", "Category", "Status", "Featured", "Actions"],
-    noProductsFound: "No products found",
-    basicInformation: "Basic Information",
-    name: "Name",
-    arabicName: "Arabic Name",
-    description:'Description'
+      addProduct: "Add Product",
+      searchProducts: "Search products...",
+      allCategories: "All Categories",
+      allStatus: "All Status",
+      active: "Active",
+      inactive: "Inactive",
+      tableHeaders: ["Name", "Category", "Status", "Featured", "Actions"],
+      noProductsFound: "No products found",
+      basicInformation: "Basic Information",
+      name: "Name",
+      arabicName: "Arabic Name",
+      description: "Description",
     },
     ar: {
       products: "المنتجات",
-    addProduct: "إضافة منتج",
-    searchProducts: "ابحث عن المنتجات...",
-    allCategories: "كل الفئات",
-    allStatus: "كل الحالات",
-    active: "نشط",
-    inactive: "غير نشط",
-    tableHeaders: ["الاسم", "الفئة", "الحالة", "مميز", "الإجراءات"],
-    noProductsFound: "لم يتم العثور على منتجات",
-    basicInformation: "المعلومات الأساسية",
-    name: "الاسم",
-    arabicName: "الاسم بالعربية",
-    description: "الوصف",
+      addProduct: "إضافة منتج",
+      searchProducts: "ابحث عن المنتجات...",
+      allCategories: "كل الفئات",
+      allStatus: "كل الحالات",
+      active: "نشط",
+      inactive: "غير نشط",
+      tableHeaders: ["الاسم", "الفئة", "الحالة", "مميز", "الإجراءات"],
+      noProductsFound: "لم يتم العثور على منتجات",
+      basicInformation: "المعلومات الأساسية",
+      name: "الاسم",
+      arabicName: "الاسم بالعربية",
+      description: "الوصف",
       arabicDescription: "الوصف بالعربية",
       rating: "التقييم",
       category: "الفئة",
@@ -98,7 +98,6 @@ export default function ProductManagement() {
       actions: "الإجراءات",
     },
   };
-  
 
   const t = translations[language] || translations.en;
 
@@ -201,8 +200,6 @@ export default function ProductManagement() {
         arabic_description: product.arabic_description,
         category_id: product.category_id,
         category_name: product.category_name,
-        base_price: product.base_price,
-        discounted_price: product.discounted_price,
         is_active: product.is_active,
         is_featured: product.is_featured,
         imageUrl: product.imageUrl,
@@ -244,7 +241,7 @@ export default function ProductManagement() {
           name: variant.name,
           price: variant.price,
           discounted_price: variant.discounted_price,
-          isAvailable: variant.isAvailable,
+          isAvailable: variant.isAvailable ?? false,
         });
       });
 
@@ -458,34 +455,32 @@ export default function ProductManagement() {
           <div className="bg-white rounded-lg shadow h-full flex flex-col">
             <div className="bg-gray-50 border-b border-gray-200">
               <div className="grid grid-cols-5 px-6 py-3">
-                {t.tableHeaders.map(
-                  (header, index) => (
-                    <div
-                      key={header}
-                      onClick={() => {
-                        const field = header.toLowerCase();
-                        if (sortField === field) {
-                          setSortDirection(
-                            sortDirection === "asc" ? "desc" : "asc"
-                          );
-                        } else {
-                          setSortField(field);
-                          setSortDirection("asc");
-                        }
-                      }}
-                      className={`text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 flex items-center ${
-                        index === 4 ? "justify-end" : ""
-                      }`}
-                    >
-                      <span>{header}</span>
-                      {sortField === header.toLowerCase() && (
-                        <span className="ml-2 text-gray-400">
-                          {sortDirection === "asc" ? "↑" : "↓"}
-                        </span>
-                      )}
-                    </div>
-                  )
-                )}
+                {t.tableHeaders.map((header, index) => (
+                  <div
+                    key={header}
+                    onClick={() => {
+                      const field = header.toLowerCase();
+                      if (sortField === field) {
+                        setSortDirection(
+                          sortDirection === "asc" ? "desc" : "asc"
+                        );
+                      } else {
+                        setSortField(field);
+                        setSortDirection("asc");
+                      }
+                    }}
+                    className={`text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 flex items-center ${
+                      index === 4 ? "justify-end" : ""
+                    }`}
+                  >
+                    <span>{header}</span>
+                    {sortField === header.toLowerCase() && (
+                      <span className="ml-2 text-gray-400">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -741,7 +736,7 @@ export default function ProductManagement() {
                                   <label>{t.variantName}</label>
                                   <input
                                     type="text"
-                                    value={variant.name}
+                                    value={variant.name || ""}
                                     onChange={(e) => {
                                       const updatedVariants = [
                                         ...selectedProduct.variants,
@@ -828,6 +823,7 @@ export default function ProductManagement() {
                                   />
                                 </div>
                                 <button
+                                type="button"
                                   onClick={() => {
                                     setSelectedProduct({
                                       ...selectedProduct,
@@ -841,6 +837,7 @@ export default function ProductManagement() {
                                   {t.delete}
                                 </button>
                                 <button
+                                 type="button"
                                   onClick={() => {
                                     setSelectedProduct({
                                       ...selectedProduct,
@@ -895,7 +892,19 @@ export default function ProductManagement() {
                             </div>
                           </div>
 
-                          <div className="mt-1 flex justify-end pt-6">
+                          <div className=" flex justify-between  items-end px-1">
+                          <div className="flex flex-col">
+                          <label htmlFor="preview">Preview</label>
+                          {selectedProduct?.imageUrl && (
+                                
+                                <img
+                                        src={selectedProduct.imageUrl || placeholder}
+                                        alt="Category Preview"
+                                        className="w-40 h-20 object-cover rounded-md"
+                                        name="preview"
+                                      />
+                              )}
+                          </div>
                             <button
                               type="submit"
                               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors duration-200"
