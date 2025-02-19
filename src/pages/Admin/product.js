@@ -28,6 +28,8 @@ export default function ProductManagement() {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
+  const [loading, setLoading] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { language } = useLanguage();
@@ -108,6 +110,7 @@ export default function ProductManagement() {
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       console.log("Fetching products...");
 
       // ✅ Fetch all products
@@ -115,6 +118,7 @@ export default function ProductManagement() {
       if (productsSnapshot.empty) {
         console.warn("No products found in Firestore.");
         setProducts([]);
+        setLoading(false);
         return;
       }
 
@@ -147,6 +151,8 @@ export default function ProductManagement() {
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("Failed to fetch products");
+    }finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -342,6 +348,7 @@ export default function ProductManagement() {
       try {
         const file = e.target.files[0];
         if (!file) return;
+        setLoadingImage(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -365,6 +372,8 @@ export default function ProductManagement() {
         }));
       } catch (error) {
         console.error("Error uploading image:", error);
+      }finally {
+        setLoadingImage(false);
       }
     };
     fileInput.click();
@@ -467,6 +476,11 @@ export default function ProductManagement() {
               </div>
             </div>
 
+           {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-600"></div>
+              </div>
+            ) : (
             <div className="flex-1 overflow-auto">
               {sortedProducts.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
@@ -534,6 +548,7 @@ export default function ProductManagement() {
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
 
@@ -832,10 +847,17 @@ export default function ProductManagement() {
                               <button
                                 type="button"
                                 onClick={handleAddImage}
+                                disabled={loadingImage} 
                                 className="bg-white text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg flex items-center border border-green-600"
                               >
-                                <Plus size={16} className="mr-2" />
-                                {t.addImage}
+                               {loadingImage ? (
+        <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-green-600"></div>
+      ) : (
+        <>
+          <Plus size={16} className="mr-2" />
+          {t.addImage}
+        </>
+      )}
                               </button>
                             </div>
                             {/* Image URL */}
@@ -861,7 +883,12 @@ export default function ProductManagement() {
                           <div className=" flex justify-between  items-end px-1">
                           <div className="flex flex-col">
                           <label htmlFor="preview">Preview</label>
-                          {selectedProduct?.imageUrl && (
+                          {loadingImage ? (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-600"></div>
+    </div>
+  ) : (
+                          selectedProduct?.imageUrl && (
                                 
                                 <img
                                         src={selectedProduct.imageUrl || placeholder}
@@ -869,7 +896,7 @@ export default function ProductManagement() {
                                         className="w-40 h-20 object-cover rounded-md"
                                         name="preview"
                                       />
-                              )}
+                              ))}
                           </div>
                             <button
                               type="submit"
