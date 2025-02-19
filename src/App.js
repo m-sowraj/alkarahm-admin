@@ -6,6 +6,7 @@ import UserManagement from './pages/Admin/user';
 import CategoryManagement from './pages/Admin/category';
 import { Toaster } from 'react-hot-toast'
 import { LanguageProvider } from './LanguageContext';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Toaster position="bottom-center" />
         <Router>
           <Routes>
-            <Route path="/" element={<CategoryManagement />} />
+            <Route path='/' element={<LoginPage/>}/>
+            <Route path="/category" element={<CategoryManagement />} />
             <Route path="/orders" element={<OrderManagement />} />
             <Route path="/products" element={<ProductManagement />} />
             <Route path="/user" element={<UserManagement />} />

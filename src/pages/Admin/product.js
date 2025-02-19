@@ -58,7 +58,7 @@ export default function ProductManagement() {
       allStatus: "All Status",
       active: "Active",
       inactive: "Inactive",
-      tableHeaders: ["Name", "Category", "Status", "Featured", "Actions"],
+      tableHeaders: ["Name", "Category", "Status", "Actions"],
       noProductsFound: "No products found",
       basicInformation: "Basic Information",
       name: "Name",
@@ -73,7 +73,7 @@ export default function ProductManagement() {
       allStatus: "كل الحالات",
       active: "نشط",
       inactive: "غير نشط",
-      tableHeaders: ["الاسم", "الفئة", "الحالة", "مميز", "الإجراءات"],
+      tableHeaders: ["الاسم", "الفئة", "الحالة","الإجراءات"],
       noProductsFound: "لم يتم العثور على منتجات",
       basicInformation: "المعلومات الأساسية",
       name: "الاسم",
@@ -174,7 +174,6 @@ export default function ProductManagement() {
       category_id: "",
       category_name: "", // ✅ Added category_name
       is_active: true,
-      is_featured: false,
       imageUrl: "",
       rating: 0, // ✅ Ensure rating is included
       variants: [
@@ -202,7 +201,6 @@ export default function ProductManagement() {
         category_id: product.category_id,
         category_name: product.category_name,
         is_active: product.is_active,
-        is_featured: product.is_featured,
         imageUrl: product.imageUrl,
         rating: product.rating || 0,
       };
@@ -256,22 +254,7 @@ export default function ProductManagement() {
       toast.error("Failed to save product");
     }
   };
-  const handleFeaturedToggle = async (product) => {
-    try {
-      const productRef = doc(db, "Products", product.docId);
-      await updateDoc(productRef, { is_featured: !product.is_featured });
-      await fetchProducts();
-      toast.success(
-        `Product ${
-          !product.is_featured ? "Featured" : "Unfeatured"
-        } successfully`
-      );
-    } catch (error) {
-      console.error("Error updating product status:", error);
-      toast.error("Failed to update product status");
-    }
-  };
-
+ 
   const handleStatusToggle = async (product) => {
     try {
       const productRef = doc(db, "Products", product.docId);
@@ -470,7 +453,7 @@ export default function ProductManagement() {
                       }
                     }}
                     className={`text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 flex items-center ${
-                      index === 4 ? "justify-end" : ""
+                      index === 3 ? "justify-end" : ""
                     }`}
                   >
                     <span>{header}</span>
@@ -534,23 +517,7 @@ export default function ProductManagement() {
                           />
                         </Switch>
                       </div>
-                      <div className="flex items-center">
-                        <Switch
-                          checked={product.is_featured}
-                          onChange={() => handleFeaturedToggle(product)}
-                          className={`${
-                            product.is_featured ? "bg-green-600" : "bg-gray-200"
-                          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-                        >
-                          <span
-                            className={`${
-                              product.is_featured
-                                ? "translate-x-6"
-                                : "translate-x-1"
-                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                          />
-                        </Switch>
-                      </div>
+                     
                       <div className="flex items-center justify-end">
                         <button
                           onClick={() => {
@@ -662,7 +629,6 @@ export default function ProductManagement() {
                               rows="3"
                             />
                           </div>
-
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               {t.arabicDescription}

@@ -22,7 +22,7 @@ export default function Sidebar() {
             </a>
           </li> */}
           <li>
-            <a href="/" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
+            <a href="/category" className="flex items-center space-x-2 p-2 hover:bg-green-700 rounded">
               <BookPlus className="h-5 w-5" />
               <span>Categories</span>
             </a>
