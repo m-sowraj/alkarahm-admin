@@ -424,7 +424,7 @@ export default function ProductManagement() {
                   <option value="">{t.allCategories}</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
-                      {category.name}
+                       {language === "en" ? category.name : category.arabic_name}
                     </option>
                   ))}
                 </select>
@@ -502,7 +502,7 @@ export default function ProductManagement() {
                         </div>
                         <div className="ml-4">
                           <div className="font-medium text-gray-900">
-                            {product.name}
+                          {language === "en" ? product.name : product.arabic_name}
                           </div>
                           <div className="text-sm text-gray-500">
                             {product.variants?.length > 0

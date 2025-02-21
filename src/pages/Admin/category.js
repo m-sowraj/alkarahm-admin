@@ -133,89 +133,94 @@ export default function CategoryManagement() {
         toast.error("Category name cannot be empty");
         return;
       }
-
+  
       let updatedCategories = [...categories];
-
+  
       if (isAddingCategory) {
-        // Generate a UUID for the new category
         category.id = uuidv4();
-
-        // Add new category
+  
         const docRef = await addDoc(collection(db, "category"), category);
-        category.docId = docRef.id; // Store Firestore document ID
+        category.docId = docRef.id;
         updatedCategories.push(category);
       } else {
         if (!category.docId) {
           toast.error("Invalid document reference.");
           return;
         }
-
+  
         const categoryRef = doc(db, "category", category.docId);
         const categorySnapshot = await getDoc(categoryRef);
-
+  
         if (!categorySnapshot.exists()) {
           toast.error("Category does not exist. Cannot update.");
           return;
         }
-
+  
         await updateDoc(categoryRef, {
           name: category.name,
           arabic_name: category.arabic_name,
-          imageUrl: category.imageUrl,
+          imageUrl: category.imageUrl, // Ensure image URL is updated in Firestore
           is_active: category.is_active,
         });
-
+  
         updatedCategories = updatedCategories.map((cat) =>
           cat.docId === category.docId ? { ...cat, ...category } : cat
         );
       }
-
+  
       setCategories(updatedCategories);
       setSelectedCategory(null);
       setIsAddingCategory(false);
       toast.success("Category saved successfully!");
+      
     } catch (error) {
       console.error("Error saving category:", error);
       toast.error("Failed to save category");
     }
   };
+  
 
-  const handleAddImage = () => {
+  const handleAddImage = (e) => {
+    e.preventDefault();
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
+    
     fileInput.onchange = async (e) => {
       try {
         const file = e.target.files[0];
         if (!file) return;
-
+  
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", "product_images");
         formData.append("cloud_name", "df3plfcau");
-
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/df3plfcau/image/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
+  
+        const res = await fetch("https://api.cloudinary.com/v1_1/df3plfcau/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+  
         const data = await res.json();
         if (!data.secure_url) throw new Error("Image upload failed");
-
-        setSelectedCategory((prev) => ({
-          ...prev,
-          imageUrl: data.secure_url,
-        }));
+  
+        // Update state properly
+        setSelectedCategory((prev) => {
+          if (!prev) return null; 
+          return { ...prev, imageUrl: data.secure_url };
+        });
+  
         setPreviewImage(data.secure_url);
+        toast.success("Image uploaded successfully!");
       } catch (error) {
         console.error("Error uploading image:", error);
+        toast.error("Image upload failed. Try again.");
       }
     };
+  
     fileInput.click();
   };
+  
 
   const handleStatusToggle = async (category) => {
     try {
@@ -337,7 +342,7 @@ export default function CategoryManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium text-gray-900">
-                          {category.name}
+                        {language === "en" ? category.name : category.arabic_name}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
