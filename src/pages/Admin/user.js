@@ -303,7 +303,7 @@ export default function UserManagement() {
                           <option value="" disabled>{t.selectRole}</option>
                           <option value="Admin">{t.userRoleAdmin}</option>
                           <option value="User">{t.userRoleUser }</option>
-                          <option value="User">{t.userRoleSuperAdmin }</option>
+                          <option value="Super admin">{t.userRoleSuperAdmin }</option>
                         </select>
                       </div>
                     </div>
