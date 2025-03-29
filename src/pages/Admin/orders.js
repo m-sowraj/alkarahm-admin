@@ -13,7 +13,9 @@ export default function OrderManagement() {
   const [orderItems, setOrderItems] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
   const { language } = useLanguage();
-
+  
+  console.log(orders);
+  
   const translations = {
     en: {
       title: "Orders",
@@ -42,6 +44,8 @@ export default function OrderManagement() {
       orderPlaced: "Order placed",
       orderDelivered: "Order delivered",
       orderCancelled: "Order cancelled",
+      orderShipped:"Order shipped",
+      noOrders:"No orders found"
     },
     ar: {
       title: "الطلبات",
@@ -70,6 +74,8 @@ export default function OrderManagement() {
       orderPlaced: "تم تقديم الطلب",
       orderDelivered: "تم تسليم الطلب",
       orderCancelled: "تم إلغاء الطلب",
+      orderShipped:"تم شحن الطلب",
+      noOrders:"لم يتم العثور على طلبات"
     },
   };
 
@@ -184,6 +190,7 @@ export default function OrderManagement() {
                     <option value="Order placed">{t.orderPlaced}</option>
                     <option value="Order delivered">{t.orderDelivered}</option>
                     <option value="Order cancelled">{t.orderCancelled}</option>
+                    <option value="Order shipped">{t.orderShipped}</option>
                   </select>
                   <div className="relative">
                     <input
@@ -266,6 +273,7 @@ export default function OrderManagement() {
                     <option value="Returned">Returned</option>
                     <option value="failed">Payment Failed</option> */}
                             <option value="Order placed">Order placed</option>
+                            <option value="Order shipped">Order shipped</option>
                             <option value="Order delivered">
                               Order delivered
                             </option>
