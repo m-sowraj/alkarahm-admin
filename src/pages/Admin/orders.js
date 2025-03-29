@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Settings, X } from "lucide-react";
 import Sidebar from "../../components/admin/sidebar";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, orderBy, query } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useLanguage } from "../../LanguageContext";
 
@@ -89,7 +89,8 @@ export default function OrderManagement() {
 
   const fetchOrders = async () => {
     try {
-      const ordersSnapshot = await getDocs(collection(db, "orders"));
+      const ordersQuery = query(collection(db, "orders"),orderBy("createdAt", "desc"));
+      const ordersSnapshot = await getDocs(ordersQuery);
       const ordersList = ordersSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
