@@ -47,13 +47,13 @@ export default function Sidebar() {
           </li>
         </ul>
       </nav>
-      // <div className="mt-5 bg-green-800 text-sm rounded-full">
-      //   <button className="flex items-center space-x-2 p-2 hover:bg-green-900 w-full rounded-full" onClick={handleToggleLanguage}>
-      //     <Settings className="h-5 w-5" />
-      //     <span>{language === "en" ? "Switch to Arabic" : "Switch to English"}</span>
-      //   </button>
-      // </div>
-      {/* <div className="mt-auto">
+      {/*  <div className="mt-5 bg-green-800 text-sm rounded-full">
+        <button className="flex items-center space-x-2 p-2 hover:bg-green-900 w-full rounded-full" onClick={handleToggleLanguage}>
+         <Settings className="h-5 w-5" />
+           <span>{language === "en" ? "Switch to Arabic" : "Switch to English"}</span>
+         </button>
+    </div>
+     <div className="mt-auto">
         <button className="flex items-center space-x-2 p-2 hover:bg-green-600 rounded w-full">
           <LogOut className="h-5 w-5" />
           <span>Log out</span>
