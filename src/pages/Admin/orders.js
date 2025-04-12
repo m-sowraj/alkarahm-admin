@@ -255,7 +255,7 @@ export default function OrderManagement() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-medium text-gray-900">
-                            ₹{order.totalAmount}
+                            QAR {order.totalAmount}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -343,7 +343,7 @@ export default function OrderManagement() {
                       <strong>{t.createdAt}:</strong> {selectedOrder.createdAt}
                     </p>
                     <p>
-                      <strong>{t.totalAmount}:</strong> ₹
+                      <strong>{t.totalAmount}:</strong> QAR
                       {selectedOrder.totalAmount || "N/A"}
                     </p>
                     <p>
@@ -436,10 +436,10 @@ export default function OrderManagement() {
                                 {item.arabicDescription || t.noDescription}
                               </td>
                               <td className="px-4 py-3 text-sm text-right text-gray-500">
-                                ₹{parseFloat(item.price).toFixed(2)}
+                                QAR {parseFloat(item.price).toFixed(2)}
                               </td>
                               <td className="px-4 py-3 text-sm font-medium text-right text-gray-900">
-                                ₹
+                                QAR 
                                 {(
                                   parseFloat(item.quantity) *
                                   parseFloat(item.price)
